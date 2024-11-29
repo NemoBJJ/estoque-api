@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Service;
 
@@ -11,11 +13,19 @@ import org.springframework.stereotype.Service;
 public class UserDetailsServiceImpl {
 
     @Bean
-    public UserDetailsService userDetailsService() {
+    public PasswordEncoder passwordEncoder() {
+        // Configura BCrypt como o codificador de senha padrão
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
+        // Configura um usuário em memória com o papel ROLE_USER
         UserDetails user = User.withUsername("admin")
-                .password("$2a$10$7H9GgfIX04o/ciRtrvOJWeUbTzRc1kSmfV9ZzGPORlzPHRmJeDZFu") // senha: admin
-                .roles("USER")
+                .password(passwordEncoder.encode("admin123")) // Senha codificada
+                .roles("USER") // Isso será tratado como "ROLE_USER"
                 .build();
+
         return new InMemoryUserDetailsManager(user);
     }
 }
