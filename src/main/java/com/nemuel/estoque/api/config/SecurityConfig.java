@@ -21,18 +21,25 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf().disable() // Desabilita CSRF para APIs RESTful
+            .csrf().disable()
             .authorizeHttpRequests(authorize -> authorize
+                // Permitir acesso público a Swagger, autenticação e endpoints básicos
                 .requestMatchers(
-                    "/swagger-ui/**", // Swagger UI
-                    "/v3/api-docs/**", // OpenAPI docs
-                    "/api/auth/**",    // Login
-                    "/health"          // Health check
-                ).permitAll() // Acesso público
-                .requestMatchers("/api/**").hasRole("USER") // Protege outras APIs
-                .anyRequest().authenticated() // Protege qualquer outra rota
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/api/auth/**",
+                    "/health"
+                ).permitAll()
+                
+                // Proteção para APIs específicas
+                .requestMatchers("/api/vendas/**").hasRole("USER") // Protege /api/vendas com role USER
+                .requestMatchers("/api/products/**").permitAll() // Permite acesso público a /api/products
+                
+                // Qualquer outro endpoint precisa de autenticação
+                .anyRequest().authenticated()
             )
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Sem gerenciamento de sessão
+            .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
