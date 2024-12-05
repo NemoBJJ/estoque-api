@@ -1,0 +1,7 @@
+id,estoque_minimo,nome,preco,quantidade,codigo_barras,data_cadastro,peso,dimensoes,preco_compra,preco_venda,estoque_maximo,localizacao_estoque
+1,50,Teclado,150.00,20,0000000007891,2024-11-07,7.4,69x16x44,100.00,200.00,100,Prateleira L2
+2,10,Mouse,80.00,50,0000000001234,2024-11-07,0.3,10x5x3,60.00,100.00,200,Prateleira L1
+3,2,Monitor,1200.00,10,0000000005678,2024-11-07,8.5,60x40x20,900.00,1500.00,50,Prateleira L3
+4,3,Webcam,300.00,15,0000000009101,2024-11-07,0.5,8x6x4,200.00,400.00,100,Prateleira L4
+5,5,Headset,200.00,25,0000000002345,2024-11-07,0.8,15x20x10,150.00,250.00,150,Prateleira L5
+6,1,Impressora,800.00,5,0000000006789,2024-11-07,12.0,50x30x20,600.00,1000.00,20,Prateleira L6

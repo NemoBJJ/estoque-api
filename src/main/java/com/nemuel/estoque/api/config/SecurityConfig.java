@@ -20,28 +20,23 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf().disable()
-            .authorizeHttpRequests(authorize -> authorize
-                // Permitir acesso público a Swagger, autenticação e endpoints básicos
-                .requestMatchers(
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**",
-                    "/api/auth/**",
-                    "/health"
-                ).permitAll()
-                
-                // Proteção para APIs específicas
-                .requestMatchers("/api/vendas/**").hasRole("USER") // Protege /api/vendas com role USER
-                .requestMatchers("/api/products/**").permitAll() // Permite acesso público a /api/products
-                
-                // Qualquer outro endpoint precisa de autenticação
-                .anyRequest().authenticated()
-            )
-            .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+    	http
+        .csrf().disable()
+        .authorizeHttpRequests(authorize -> authorize
+            .requestMatchers(
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/api/auth/**",
+                "/health"
+            ).permitAll()
+            .requestMatchers("/api/vendas/**").hasAnyRole("USER", "ADMIN") // Permite USER e ADMIN
+            .anyRequest().authenticated()
+        )
+        .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        .and()
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }

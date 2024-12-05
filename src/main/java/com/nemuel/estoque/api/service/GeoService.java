@@ -13,7 +13,6 @@ public class GeoService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // Obter coordenadas a partir do CEP
     public Map<String, Double> getCoordenadasPorCep(String cep) {
         String viaCepUrl = "https://viacep.com.br/ws/" + cep + "/json/";
         Map<String, Object> viaCepResponse = restTemplate.getForObject(viaCepUrl, Map.class);
@@ -27,7 +26,6 @@ public class GeoService {
         String query = cidade + ", " + estado;
 
         String openCageUrl = "https://api.opencagedata.com/geocode/v1/json?q=" + query + "&key=ce6e17e6631f4cef9b74bb09f901e2c4";
-
 
         try {
             String jsonResponse = restTemplate.getForObject(openCageUrl, String.class);
@@ -53,7 +51,6 @@ public class GeoService {
         }
     }
 
-    // Método para calcular a distância entre dois pontos geográficos (fórmula de Haversine)
     public double calcularDistancia(double lat1, double lon1, double lat2, double lon2) {
         final int EARTH_RADIUS = 6371; // Raio da Terra em km
 
