@@ -1,6 +1,7 @@
 package com.nemuel.estoque.api.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "produtos")
@@ -16,8 +17,8 @@ public class Produto {
     @Column(nullable = false)
     private int quantidade;
 
-    @Column(nullable = false)
-    private double preco;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal preco;
 
     @Column(nullable = false, name = "estoque_minimo")
     private int estoqueMinimo;
@@ -27,7 +28,7 @@ public class Produto {
     }
 
     // Construtor com argumentos
-    public Produto(Long id, String nome, int quantidade, double preco, int estoqueMinimo) {
+    public Produto(Long id, String nome, int quantidade, BigDecimal preco, int estoqueMinimo) {
         this.id = id;
         this.nome = nome;
         this.quantidade = quantidade;
@@ -60,11 +61,11 @@ public class Produto {
         this.quantidade = quantidade;
     }
 
-    public double getPreco() {
+    public BigDecimal getPreco() {
         return preco;
     }
 
-    public void setPreco(double preco) {
+    public void setPreco(BigDecimal preco) {
         this.preco = preco;
     }
 
@@ -87,3 +88,4 @@ public class Produto {
                 '}';
     }
 }
+

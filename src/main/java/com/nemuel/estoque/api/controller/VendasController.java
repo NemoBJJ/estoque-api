@@ -4,6 +4,7 @@ import com.nemuel.estoque.api.model.Produto;
 import com.nemuel.estoque.api.service.ProdutoService;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,11 +37,13 @@ public class VendasController {
         Produto produto = produtoService.buscarPorId(id);
 
         // Lógica fictícia para calcular o frete
-        double frete = produto.getPreco() < 1000 ? 50 : produto.getPreco() * 0.05;
+        BigDecimal frete = produto.getPreco().compareTo(new BigDecimal("1000")) < 0
+                ? new BigDecimal("50")
+                : produto.getPreco().multiply(new BigDecimal("0.05")).setScale(2, BigDecimal.ROUND_HALF_UP);
 
         return Map.of(
                 "produto", produto.getNome(),
-                "frete", String.format("%.2f", frete),
+                "frete", frete.toString(),
                 "cep", cep
         );
     }
@@ -49,11 +52,11 @@ public class VendasController {
     @GetMapping("/simular-pagamento/{id}")
     public Map<String, Object> simularPagamento(@PathVariable Long id) {
         Produto produto = produtoService.buscarPorId(id);
-        double valorFinal = produto.getPreco() * 1.10; // Adicionando taxa de 10%
+        BigDecimal valorFinal = produto.getPreco().multiply(new BigDecimal("1.10")).setScale(2, BigDecimal.ROUND_HALF_UP); // Adicionando taxa de 10%
         return Map.of(
                 "produto", produto.getNome(),
-                "preco_original", String.format("%.2f", produto.getPreco()),
-                "valor_final", String.format("%.2f", valorFinal)
+                "preco_original", produto.getPreco().setScale(2, BigDecimal.ROUND_HALF_UP).toString(),
+                "valor_final", valorFinal.toString()
         );
     }
 }

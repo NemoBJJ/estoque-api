@@ -27,28 +27,37 @@ public class ProdutoService {
         List<Produto> produtos = produtoRepository.findAll();
         String targetCurrency = (currency == null || currency.isEmpty()) ? "BRL" : currency;
 
-        // Taxa de conversão: usa 1.0 como taxa padrão para BRL
-        final double rate;
-        if ("BRL".equalsIgnoreCase(targetCurrency)) {
-            rate = 1.0;
-        } else {
-            Map<String, Object> exchangeRates = currencyService.getExchangeRates();
-            try {
-                String ratesString = exchangeRates.get("rates").toString();
-                rate = Double.parseDouble(ratesString.split(targetCurrency + "=")[1].split(",")[0]);
-            } catch (Exception e) {
-                throw new RuntimeException("Erro ao processar a taxa de câmbio para a moeda: " + targetCurrency, e);
+        // Taxa de conversão: usa BigDecimal para maior precisão
+        final BigDecimal rate;
+        Map<String, Object> exchangeRates = currencyService.getExchangeRates();
+        try {
+            Map<String, Object> rates = (Map<String, Object>) exchangeRates.get("rates");
+            if ("BRL".equalsIgnoreCase(targetCurrency)) {
+                rate = new BigDecimal(rates.get("BRL").toString());
+            } else {
+                rate = new BigDecimal(rates.getOrDefault(targetCurrency.toUpperCase(), "1").toString());
             }
+            System.out.println("Taxa de câmbio para " + targetCurrency + ": " + rate);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao processar a taxa de câmbio para a moeda: " + targetCurrency, e);
         }
 
         // Retorna produtos com valores formatados
         return produtos.stream()
-                .map(produto -> new ProdutoDTO(
-                        produto.getId(),
-                        produto.getNome(),
-                        BigDecimal.valueOf(produto.getPreco() * rate).setScale(2, RoundingMode.HALF_UP).doubleValue(),
-                        targetCurrency
-                ))
+                .map(produto -> {
+                    BigDecimal precoConvertido = produto.getPreco()
+                            .multiply(rate)
+                            .setScale(2, RoundingMode.HALF_UP);
+                    System.out.println("Produto: " + produto.getNome() +
+                            ", Preço Original: " + produto.getPreco() +
+                            ", Preço Convertido: " + precoConvertido);
+                    return new ProdutoDTO(
+                            produto.getId(),
+                            produto.getNome(),
+                            precoConvertido,
+                            targetCurrency
+                    );
+                })
                 .collect(Collectors.toList());
     }
 

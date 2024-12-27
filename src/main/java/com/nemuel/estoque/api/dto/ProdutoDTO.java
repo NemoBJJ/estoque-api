@@ -1,5 +1,6 @@
 package com.nemuel.estoque.api.dto;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 public class ProdutoDTO {
@@ -8,7 +9,7 @@ public class ProdutoDTO {
     private String preco; // Alterado para string formatada
     private String moeda;
 
-    public ProdutoDTO(Long id, String nome, double preco, String moeda) {
+    public ProdutoDTO(Long id, String nome, BigDecimal preco, String moeda) {
         DecimalFormat df = new DecimalFormat("#.00");
         this.id = id;
         this.nome = nome;
@@ -37,7 +38,7 @@ public class ProdutoDTO {
         return preco;
     }
 
-    public void setPreco(double preco) {
+    public void setPreco(BigDecimal preco) {
         DecimalFormat df = new DecimalFormat("#.00");
         this.preco = df.format(preco);
     }
@@ -50,3 +51,4 @@ public class ProdutoDTO {
         this.moeda = moeda;
     }
 }
+

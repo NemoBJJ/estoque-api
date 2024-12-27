@@ -3,14 +3,17 @@ package com.nemuel.estoque.api.controller;
 import com.nemuel.estoque.api.dto.ProdutoDTO;
 import com.nemuel.estoque.api.model.Produto;
 import com.nemuel.estoque.api.service.ProdutoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/produtos")
+@Tag(name = "Produtos", description = "Endpoints para gerenciamento de produtos")
 public class ProdutoController {
 
     private final ProdutoService produtoService;
@@ -20,8 +23,11 @@ public class ProdutoController {
     }
 
     // Listar produtos com suporte a conversão de moeda
+    @Operation(summary = "Listar produtos", description = "Retorna a lista de produtos. Opcionalmente, pode converter os preços para a moeda especificada.")
     @GetMapping
-    public List<ProdutoDTO> listarProdutos(@RequestParam(required = false) String currency) {
+    public List<ProdutoDTO> listarProdutos(
+            @Parameter(description = "Código da moeda para conversão (ex.: USD, EUR, etc.)", example = "USD")
+            @RequestParam(required = false) String currency) {
         if (currency != null) {
             return produtoService.getProdutosComMoeda(currency);
         }
@@ -37,22 +43,36 @@ public class ProdutoController {
     }
 
     // Criar um novo produto
+    @Operation(summary = "Criar produto", description = "Cria um novo produto no sistema.")
     @PostMapping
     public Produto criarProduto(@RequestBody Produto produto) {
         return produtoService.salvarProduto(produto);
     }
 
     // Buscar produto por ID
+    @Operation(summary = "Buscar produto por ID", description = "Busca um produto específico pelo seu ID.")
     @GetMapping("/{id}")
     public Produto buscarProdutoPorId(@PathVariable Long id) {
         return produtoService.buscarPorId(id);
     }
 
     // Deletar produto por ID
+    @Operation(summary = "Deletar produto", description = "Deleta um produto específico pelo seu ID.")
     @DeleteMapping("/{id}")
     public void deletarProduto(@PathVariable Long id) {
         produtoService.deletarProduto(id);
     }
+
+    // Endpoint para listar produtos com conversão de moeda
+    @Operation(summary = "Listar produtos com moeda", description = "Lista produtos com preços convertidos para a moeda especificada.")
+    @GetMapping("/com-moeda")
+    public List<ProdutoDTO> listarProdutosComMoeda(
+            @Parameter(description = "Código da moeda para conversão (ex.: USD, EUR, etc.)", example = "USD")
+            @RequestParam(required = false) String currency) {
+        return produtoService.getProdutosComMoeda(currency);
+    }
+
+
 
   /*
     // Sincronizar Produtos

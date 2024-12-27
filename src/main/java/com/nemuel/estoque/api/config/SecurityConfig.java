@@ -20,28 +20,26 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    	http
-        .csrf().disable()
-        .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers(
-                "/swagger-ui/**",
-                "/v3/api-docs/**",
-                "/api/auth/**",
-                "/health"
-            ).permitAll()
-            .requestMatchers("/api/vendas/**").hasAnyRole("USER", "ADMIN") // Permite USER e ADMIN
-            .anyRequest().authenticated()
-        )
-        .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
+        http
+            .csrf().disable()
+            .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers(
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/api/auth/**",
+                    "/health",
+                    "/api/produtos/com-moeda" // Permite acesso público a este endpoint específico
+                ).permitAll()
+                .requestMatchers("/api/vendas/**").hasAnyRole("USER", "ADMIN") // Permite acesso a USER e ADMIN
+                .anyRequest().authenticated()
+            )
+            .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
