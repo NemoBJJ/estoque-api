@@ -1,4 +1,5 @@
 package com.nemuel.estoque.api.config;
+import org.springframework.http.HttpMethod;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,9 +29,12 @@ public class SecurityConfig {
                     "/v3/api-docs/**",
                     "/api/auth/**",
                     "/health",
-                    "/api/produtos/com-moeda" // Permite acesso público a este endpoint específico
+                    "/api/produtos/com-moeda",
+                    "/api/produtos", // Permitir GET na rota de produtos
+                    "/login",
+                    "/error"
                 ).permitAll()
-                .requestMatchers("/api/vendas/**").hasAnyRole("USER", "ADMIN") // Permite acesso a USER e ADMIN
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Permitir todas as requisições OPTIONS
                 .anyRequest().authenticated()
             )
             .sessionManagement()
@@ -40,6 +44,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {

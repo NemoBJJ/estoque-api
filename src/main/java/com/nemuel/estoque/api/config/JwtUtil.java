@@ -3,11 +3,10 @@ package com.nemuel.estoque.api.config;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,8 @@ import java.util.stream.Collectors;
 @Component
 public class JwtUtil {
 
-    private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    @Value("${jwt.secret}")
+    private String secretKey; // Secret key fixa vinda do application.properties
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -51,7 +51,7 @@ public class JwtUtil {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
+                .setSigningKey(secretKey.getBytes()) // Secret key em formato de bytes
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -63,8 +63,7 @@ public class JwtUtil {
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7)) // 7 dias
- // 7 dias
-                .signWith(SECRET_KEY)
+                .signWith(SignatureAlgorithm.HS256, secretKey.getBytes()) // Assinatura com a secret key fixa
                 .compact();
     }
 }
