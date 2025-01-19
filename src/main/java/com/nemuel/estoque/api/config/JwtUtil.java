@@ -3,10 +3,12 @@ package com.nemuel.estoque.api.config;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +17,18 @@ import java.util.stream.Collectors;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
-    private String secretKey; // Secret key fixa vinda do application.properties
+    private final SecretKey secretKey; // Chave dinâmica gerada na inicialização da aplicação
+
+    public JwtUtil() {
+        // Gerando a chave dinâmica
+        try {
+            KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacSHA256");
+            keyGenerator.init(256); // Tamanho da chave (256 bits)
+            this.secretKey = keyGenerator.generateKey();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Erro ao gerar chave JWT", e);
+        }
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -51,7 +63,7 @@ public class JwtUtil {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(secretKey.getBytes()) // Secret key em formato de bytes
+                .setSigningKey(secretKey) // Usa a chave dinâmica
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -62,8 +74,8 @@ public class JwtUtil {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7)) // 7 dias
-                .signWith(SignatureAlgorithm.HS256, secretKey.getBytes()) // Assinatura com a secret key fixa
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7)) // Token válido por 7 dias
+                .signWith(secretKey) // Usa a chave dinâmica
                 .compact();
     }
 }

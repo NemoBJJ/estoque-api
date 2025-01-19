@@ -46,3 +46,5 @@ https://github.com/NemoBJJ/Estoque-API-FrontEnd
 
 4. Inicie o FrontEnd  : npm start
 
+Swagger : http://localhost:8083/swagger-ui/index.html
+
