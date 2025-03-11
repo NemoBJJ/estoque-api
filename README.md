@@ -8,11 +8,13 @@ Sistema para Gerenciamento de Estoque.
 -Funcionalidades integradas a API's externas de Geolocalização e Currency.
 - Proporciona integração com plataformas de e-commerce para sincronização de dados.
 
-## 🔧 Tecnologias Utilizadas
-- **Backend:** Java, Spring Boot, Hibernate, Maven.
-- **Banco de Dados:** MySQL/WorkBench
-- **Ferramentas:** Postman (para teste e documentação de APIs), Swagger (para explorar e testar endpoints).
-
+🛠 Tecnologias Integradas 
+- **Backend:** Java, Spring Boot, Hibernate, Maven  
+- **Frontend:** React, Axios, CSS  
+- **Database:** Advanced SQL, MySQL WorkBench  
+- **Cloud & Infrastructure:** AWS (EC2, LoadBalancer, SSL Certificates)  
+- **Netlify:** CI/CD, CDN, DNS Manager
+- 
 ## 📂 Funcionalidades
 - Cadastro, edição e exclusão de produtos.
 - Controle de entrada e saída de estoque.
@@ -38,7 +40,7 @@ Usabilidade: Interface amigável no Swagger e no FrontEnd para explorar a API e 
 ## 🛠️ Como Rodar o Projeto
 1. Clone o repositório:
    ```bash
-https://github.com/NemoBJJ/Estoque-API-FrontEnd
+https://github.com/NemoBJJ/Estoque-API
 
 2. Instale as dependencias : mvn install
 
