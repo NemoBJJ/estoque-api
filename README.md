@@ -1,7 +1,7 @@
 # Estoque API
 Sistema para Gerenciamento de Estoque.
 
-## 🚀 Problema Resolvido
+## 🚀 OBJETIVO
 - Ajuda empresas a gerenciar seu estoque de produtos de forma eficiente.
 - Facilita o controle de estoque, através de um monitoramento prático e intuitivo.
 -Fácil Acesso ao banco de dados, permitindo buscas por nome ou número da transação
