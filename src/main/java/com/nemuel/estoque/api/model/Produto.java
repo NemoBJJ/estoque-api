@@ -23,17 +23,39 @@ public class Produto {
     @Column(nullable = false, name = "estoque_minimo")
     private int estoqueMinimo;
 
+    @Column(length = 100)
+    private String categoria;
+
+    @Column(name = "codigo_interno", unique = true, length = 50)
+    private String codigoInterno;
+
+    @Column(name = "codigo_barras", unique = true, length = 50)
+    private String codigoBarras;
+
     // Construtor padrão
     public Produto() {
     }
 
-    // Construtor com argumentos
+    // Construtor com argumentos (sem os novos campos)
     public Produto(Long id, String nome, int quantidade, BigDecimal preco, int estoqueMinimo) {
         this.id = id;
         this.nome = nome;
         this.quantidade = quantidade;
         this.preco = preco;
         this.estoqueMinimo = estoqueMinimo;
+    }
+
+    // Construtor completo com todos os campos
+    public Produto(Long id, String nome, int quantidade, BigDecimal preco, int estoqueMinimo,
+                   String categoria, String codigoInterno, String codigoBarras) {
+        this.id = id;
+        this.nome = nome;
+        this.quantidade = quantidade;
+        this.preco = preco;
+        this.estoqueMinimo = estoqueMinimo;
+        this.categoria = categoria;
+        this.codigoInterno = codigoInterno;
+        this.codigoBarras = codigoBarras;
     }
 
     // Getters e Setters
@@ -77,6 +99,30 @@ public class Produto {
         this.estoqueMinimo = estoqueMinimo;
     }
 
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    public String getCodigoInterno() {
+        return codigoInterno;
+    }
+
+    public void setCodigoInterno(String codigoInterno) {
+        this.codigoInterno = codigoInterno;
+    }
+
+    public String getCodigoBarras() {
+        return codigoBarras;
+    }
+
+    public void setCodigoBarras(String codigoBarras) {
+        this.codigoBarras = codigoBarras;
+    }
+
     @Override
     public String toString() {
         return "Produto{" +
@@ -85,7 +131,9 @@ public class Produto {
                 ", quantidade=" + quantidade +
                 ", preco=" + preco +
                 ", estoqueMinimo=" + estoqueMinimo +
+                ", categoria='" + categoria + '\'' +
+                ", codigoInterno='" + codigoInterno + '\'' +
+                ", codigoBarras='" + codigoBarras + '\'' +
                 '}';
     }
 }
-

@@ -1,3 +1,4 @@
+/*
 package com.nemuel.estoque.api.controller;
 
 import com.nemuel.estoque.api.config.JwtUtil;
@@ -34,3 +35,4 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(token));
     }
 }
+*/

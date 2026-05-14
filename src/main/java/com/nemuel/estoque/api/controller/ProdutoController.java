@@ -40,7 +40,12 @@ public class ProdutoController {
                         produto.getId(),
                         produto.getNome(),
                         produto.getPreco(),
-                        "BRL" // Moeda padrão
+                        "BRL",
+                        produto.getQuantidade(),
+                        produto.getEstoqueMinimo(),
+                        produto.getCategoria(),
+                        produto.getCodigoInterno(),
+                        produto.getCodigoBarras()
                 ))
                 .collect(Collectors.toList());
     }
@@ -50,6 +55,14 @@ public class ProdutoController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public Produto criarProduto(@RequestBody Produto produto) {
+        // Gera código interno automaticamente se não foi informado
+        if (produto.getCodigoInterno() == null || produto.getCodigoInterno().isEmpty()) {
+            produto.setCodigoInterno(gerarCodigoInterno(produto.getNome()));
+        }
+        // Gera código de barras automaticamente se não foi informado
+        if (produto.getCodigoBarras() == null || produto.getCodigoBarras().isEmpty()) {
+            produto.setCodigoBarras(gerarCodigoBarras());
+        }
         return produtoService.salvarProduto(produto);
     }
 
@@ -85,6 +98,11 @@ public class ProdutoController {
         // Atualiza os dados do produto
         produtoExistente.setNome(produtoAtualizado.getNome());
         produtoExistente.setPreco(produtoAtualizado.getPreco());
+        produtoExistente.setQuantidade(produtoAtualizado.getQuantidade());
+        produtoExistente.setEstoqueMinimo(produtoAtualizado.getEstoqueMinimo());
+        produtoExistente.setCategoria(produtoAtualizado.getCategoria());
+        produtoExistente.setCodigoInterno(produtoAtualizado.getCodigoInterno());
+        produtoExistente.setCodigoBarras(produtoAtualizado.getCodigoBarras());
 
         // Salva as alterações
         Produto produtoSalvo = produtoService.salvarProduto(produtoExistente);
@@ -99,7 +117,37 @@ public class ProdutoController {
     public List<ProdutoDTO> listarProdutosComMoeda(
             @Parameter(description = "Código da moeda para conversão (ex.: USD, EUR, etc.)", example = "USD")
             @RequestParam(required = false) String currency) {
-        return produtoService.getProdutosComMoeda(currency);
+        List<ProdutoDTO> produtosComMoeda = produtoService.getProdutosComMoeda(currency);
+        
+        // Adiciona os campos extras aos produtos convertidos
+        return produtosComMoeda.stream()
+                .map(dto -> {
+                    Produto produto = produtoService.buscarPorId(dto.getId());
+                    return new ProdutoDTO(
+                        dto.getId(),
+                        dto.getNome(),
+                        new java.math.BigDecimal(dto.getPreco().replace(",", ".")),
+                        dto.getMoeda(),
+                        produto.getQuantidade(),
+                        produto.getEstoqueMinimo(),
+                        produto.getCategoria(),
+                        produto.getCodigoInterno(),
+                        produto.getCodigoBarras()
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
+    // Métodos auxiliares para gerar códigos
+    private String gerarCodigoInterno(String nome) {
+        String prefixo = nome.toUpperCase()
+                .replaceAll("[^A-Z0-9]", "")
+                .substring(0, Math.min(10, nome.length()));
+        return prefixo + "-" + System.currentTimeMillis();
+    }
+
+    private String gerarCodigoBarras() {
+        return "789" + System.currentTimeMillis();
     }
 }
 
@@ -139,4 +187,3 @@ public class ProdutoController {
         );
     }
     */
-
