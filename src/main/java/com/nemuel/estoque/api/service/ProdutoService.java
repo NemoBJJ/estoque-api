@@ -55,7 +55,12 @@ public class ProdutoService {
                             produto.getId(),
                             produto.getNome(),
                             precoConvertido,
-                            targetCurrency
+                            targetCurrency,
+                            produto.getQuantidade(),
+                            produto.getEstoqueMinimo(),
+                            produto.getCategoria(),
+                            produto.getCodigoInterno(),
+                            produto.getCodigoBarras()
                     );
                 })
                 .collect(Collectors.toList());
@@ -80,5 +85,10 @@ public class ProdutoService {
     // Deletar produto por ID
     public void deletarProduto(Long id) {
         produtoRepository.deleteById(id);
+    }
+
+    // Buscar produto por código de barras
+    public Produto buscarPorCodigoBarras(String codigoBarras) {
+        return produtoRepository.findByCodigoBarras(codigoBarras).orElse(null);
     }
 }

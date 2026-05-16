@@ -2,14 +2,18 @@ package com.nemuel.estoque.api.controller;
 
 import com.nemuel.estoque.api.dto.ProdutoDTO;
 import com.nemuel.estoque.api.model.Produto;
+import com.nemuel.estoque.api.model.Venda;
 import com.nemuel.estoque.api.service.ProdutoService;
+import com.nemuel.estoque.api.service.VendaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,6 +23,9 @@ import java.util.stream.Collectors;
 public class ProdutoController {
 
     private final ProdutoService produtoService;
+    
+    @Autowired
+    private VendaService vendaService;
 
     public ProdutoController(ProdutoService produtoService) {
         this.produtoService = produtoService;
@@ -74,6 +81,18 @@ public class ProdutoController {
         return produtoService.buscarPorId(id);
     }
 
+    // Buscar produto por código de barras
+    @Operation(summary = "Buscar produto por código de barras", description = "Busca um produto específico pelo seu código de barras.")
+    @GetMapping("/buscar/codigo-barras/{codigo}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<Produto> buscarPorCodigoBarras(@PathVariable String codigo) {
+        Produto produto = produtoService.buscarPorCodigoBarras(codigo);
+        if (produto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(produto);
+    }
+
     // Deletar produto por ID
     @Operation(summary = "Deletar produto", description = "Deleta um produto específico pelo seu ID.")
     @DeleteMapping("/{id}")
@@ -82,8 +101,8 @@ public class ProdutoController {
         produtoService.deletarProduto(id);
     }
 
-    // Atualizar produto existente
-    @Operation(summary = "Atualizar produto", description = "Atualiza os dados de um produto existente pelo seu ID.")
+    // Atualizar produto existente (incluindo vendas)
+    @Operation(summary = "Atualizar produto", description = "Atualiza os dados de um produto existente pelo seu ID. Se a quantidade diminuir, registra uma venda no histórico.")
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Produto> atualizarProduto(
@@ -93,6 +112,24 @@ public class ProdutoController {
         Produto produtoExistente = produtoService.buscarPorId(id);
         if (produtoExistente == null) {
             return ResponseEntity.notFound().build();
+        }
+
+        // Verifica se é uma venda (quantidade diminuiu)
+        if (produtoAtualizado.getQuantidade() < produtoExistente.getQuantidade()) {
+            int quantidadeVendida = produtoExistente.getQuantidade() - produtoAtualizado.getQuantidade();
+            BigDecimal totalVenda = produtoExistente.getPreco().multiply(BigDecimal.valueOf(quantidadeVendida));
+            
+            Venda venda = new Venda(
+                produtoExistente.getId(),
+                produtoExistente.getNome(),
+                quantidadeVendida,
+                produtoExistente.getPreco(),
+                totalVenda,
+                "Sistema",
+                "Venda registrada via sistema"
+            );
+            vendaService.registrarVenda(venda);
+            System.out.println("✅ Venda registrada: " + quantidadeVendida + "x " + produtoExistente.getNome() + " - Total: R$ " + totalVenda);
         }
 
         // Atualiza os dados do produto
