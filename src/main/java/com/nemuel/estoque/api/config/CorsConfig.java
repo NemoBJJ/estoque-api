@@ -13,13 +13,16 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // Permite todas as rotas
-                        .allowedOrigins("http://localhost:3001") // Permite os Front-Ends
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Métodos permitidos
-                        .allowedHeaders("*") // Permite todos os cabeçalhos
+                registry.addMapping("/**")
+                        .allowedOrigins(
+                            "http://localhost:3001",              // Desenvolvimento local
+                            "https://gestexestoque.netlify.app"   // Produção
+                        )
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
                         .exposedHeaders("Authorization")
-                        .allowCredentials(true) // Permite credenciais (JWT)
-                        .maxAge(3600); // Cache de 1 hora para requisições OPTIONS (pré-voo)
+                        .allowCredentials(true)
+                        .maxAge(3600);
             }
         };
     }
