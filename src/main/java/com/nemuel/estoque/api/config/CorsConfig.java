@@ -15,10 +15,9 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins(
-                            "http://localhost:3001",              // Desenvolvimento local
-                            "https://gestexestoque.netlify.app",  // Produção (antigo)
-                            "https://estoque.neemindev.com",      // ✅ NOVO DOMÍNIO
-                           // ✅ Portal Principal
+                            "http://localhost:3001",
+                            "https://gestexestoque.netlify.app",
+                            "https://estoque.neemindev.com"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
